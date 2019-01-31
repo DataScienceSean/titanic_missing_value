@@ -1,0 +1,82 @@
+---
+title: "Titanic Missing Values Assingment"
+author: "Sean F. Larsen"
+date: "January 30, 2019"
+output: html_document
+---
+
+## Springboard Titanic Missing Values Assignment
+
+On Kaggle, there is a dataset of all the passangers of the Titanic with various data.  Many of these fields are missing data.  There are various ways to handdle the data and each task is handdled differently.
+
+## Packages
+
+I used the following Packages: readxl, tidyverse, tidyr, and dplyr
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+```
+
+## # Task 0: Load into R Studio
+
+I was provided an excle file called titanic3.xls
+This file was imported to R and then saved as a CSV file called titanic_original.csv
+I also tunred the imported data into a dataframe.
+
+```{r echo=FALSE}
+titanic_dt <- read_excel("titanic3.xls")
+write.csv(titanic_dt, file = "titanic_original.csv")
+titanic_df <- data.frame(titanic_dt)
+```
+
+## Task 1: Port of embarkation
+
+After leaving Southampton on 10 April 1912, Titanic called at Cherbourg in France and Queenstown (now Cobh) in Ireland before heading west to New York. The dataset has a column for the port of embarkation called embark.  The values are S for Southampton, C for Cherbourg and Q for Queenstown.  The missing values were replaced with S.
+
+```{r echo=FALSE}
+titanic_df$embarked  <- ifelse(is.na(titanic_df$embarked), "S", titanic_df$embarked)
+```
+
+## Task 2: Age
+
+There were several passangers that did not have an age listed.  It is normal in such cases to use the mean value of the population as the replacement for the missing values.
+
+```{r}
+round(mean(titanic_df$age, na.rm=TRUE),0)
+
+```
+
+The mean Age of 30 was used as the replacement value.
+
+```{r echo=FALSE}
+titanic_df$age  <- ifelse(is.na(titanic_df$age), 30, titanic_df$age)
+
+```
+
+## Task 3: Lifeboat
+
+Many passangers did not make it to lifeboats. Replace missing values with "NONE"
+
+```{r echo=FALSE}
+titanic_df$boat  <- ifelse(is.na(titanic_df$boat), "NONE", titanic_df$boat)
+```
+
+## Task 4: Cabin
+
+Many passangers are not shown has having an assigned cabin.  It is possible that this has to do with whether or not they survided. Rather than replace the missing value, a new column was added with a bianary.  1 = they were assgined a cabin and 0 they were not.
+
+```{r echo=FALSE}
+titanic_df <- mutate(titanic_df, has_cabin_number = ifelse(is.na(titanic_df$cabin), 0, 1))
+```
+
+## Task 5: Submit Project to Github
+
+A CSV dfile was created named titanic_clean.csv
+This file was saved and the project was submitted to Github
+
+```{r echo=FALSE}
+write.csv(titanic_df, file = "titanic_clean.csv")
+```
